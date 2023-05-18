@@ -1,5 +1,8 @@
 package com.r2s.demo.service;
 
-public interface CategoryService {
+import com.r2s.demo.dto.CategoryDTO;
+import com.r2s.demo.entity.Category;
 
+public interface CategoryService extends BaseService<CategoryDTO, Long>{
+	
 }
