@@ -35,9 +35,10 @@ public class CategoryServiceImpl implements CategoryService{
 	public List<CategoryDTO> getAll() {
 		List<Category> categories =  categoryRepository.findAll();
 		return categories.stream()
-				.map(category -> modelMapper.map(category, CategoryDTO.class))
-				.collect(Collectors.toList());
+				.map(category -> modelMapper.map(category, CategoryDTO.class)).toList();
+				//.collect(Collectors.toList());
 	}
+	@Transactional(readOnly = true)
 	@Override
 	public CategoryDTO getById(Long id) {
 		Optional<Category> category = categoryRepository.findById(id);
@@ -45,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService{
 			return modelMapper.map(category, CategoryDTO.class);
 		}
 		else
-			System.out.println("122");
+			
 		return null;
 	}
 
