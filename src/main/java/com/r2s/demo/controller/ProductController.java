@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +22,7 @@ import com.r2s.demo.service.ProductService;
 public class ProductController {
 
 	@Autowired
-	ProductService productService;
+	private ProductService productService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ProductDTO> getById(@PathVariable Long id) {
@@ -27,7 +30,7 @@ public class ProductController {
 		return new ResponseEntity<>(productDTO, HttpStatus.OK);
 	}
 
-	@GetMapping("/")
+	@GetMapping()
 	// path: /products/{categoryId}?pageNum= &pageSize= $sortDir= &sortBy=
 	public ResponseEntity<List<ProductDTO>> getProductsByCategory(
 			@RequestParam("categoryId") Long categoryId,
@@ -40,5 +43,20 @@ public class ProductController {
 		return new ResponseEntity<>(productDTOS, HttpStatus.OK);
 
 	}
-
+	@PostMapping()
+	public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO productDTO)
+	{
+		ProductDTO result = productService.create(productDTO);
+		return new ResponseEntity<>(result, HttpStatus.CREATED);
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<ProductDTO> update(
+			@PathVariable Long id,
+			@RequestBody ProductDTO productDTO)
+	{
+		ProductDTO result = productService.update(productDTO);
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
 }

@@ -58,17 +58,34 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	@Transactional
 	@Override
-	public ProductDTO create(ProductDTO type) {
-		// TODO Auto-generated method stub
-		return null;
+	public ProductDTO create(ProductDTO productDTO) {
+		Optional<Product> existedProduct = productRepository.findById(productDTO.getId());
+		if (existedProduct.isPresent())
+		{
+			throw new RuntimeException("product is exist");
+		}
+		else {
+			Product product = modelMapper.map(productDTO, Product.class);
+			productRepository.save(product);
+			return modelMapper.map(product, ProductDTO.class);
+		}
 	}
-
+	@Transactional
 	@Override
-	public ProductDTO update(ProductDTO type) {
-		// TODO Auto-generated method stub
-		return null;
+	public ProductDTO update(ProductDTO productDTO) {
+		Optional<Product> existedProduct = productRepository.findById(productDTO.getId());
+		if (existedProduct.isPresent())
+		{
+			Product product = modelMapper.map(productDTO, Product.class);
+			productRepository.save(product);
+			return modelMapper.map(product, ProductDTO.class);
+		}
+		else {
+			throw new RuntimeException("product not found");
+		}
 	}
 
 }

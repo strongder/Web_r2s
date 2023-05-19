@@ -33,6 +33,9 @@ public class CartLineItem {
 	@Column (name = "quantity")
 	private int quantity;
 	
+	@Column(name = "is_delete", columnDefinition = "boolean default false")
+	private boolean isDelete;
+	
 	
 	@ManyToOne
 	@JoinColumn(name = "cart_id")
