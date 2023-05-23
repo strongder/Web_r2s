@@ -8,4 +8,8 @@ import com.r2s.demo.entity.Role;
 
 public interface RoleRepository extends JpaRepository<Role, Long>{
 	Optional<Role>  findByRoleName(String roleName);
+
+	
+
+	
 }

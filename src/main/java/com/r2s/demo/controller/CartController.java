@@ -21,14 +21,15 @@ public class CartController {
 	private CartService cartService;
 	
 	
-	@PostMapping("/{variantProductId}")
+	@PostMapping("/{cartId}/{variantProductId}")
 	public ResponseEntity<CartDTO> addProductByCart(
+			@PathVariable Long cartId,
 			@PathVariable Long variantProductId,
 			@RequestParam int quantity
 			)
 	{
 		
-		CartDTO cartDTO = cartService.addProductToCart(variantProductId, quantity);
+		CartDTO cartDTO = cartService.addProductToCart(variantProductId, variantProductId, quantity);
 		return new ResponseEntity<>(cartDTO, HttpStatus.CREATED);
 		
 	}

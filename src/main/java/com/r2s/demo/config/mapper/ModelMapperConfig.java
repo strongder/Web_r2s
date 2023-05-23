@@ -14,16 +14,21 @@ import org.springframework.context.annotation.Configuration;
 
 import com.r2s.demo.dto.CartLineItemDTO;
 import com.r2s.demo.dto.OrderDTO;
+import com.r2s.demo.dto.UserDTO;
 import com.r2s.demo.entity.CartLineItem;
 import com.r2s.demo.entity.Order;
+import com.r2s.demo.entity.User;
+
 @Configuration
 public class ModelMapperConfig {
 
-//    @Bean
-//    public StringToRoleSetConverter stringToRoleSetConverter() {
-//        return new StringToRoleSetConverter();
-//    }
-
+	
+	@Bean
+	public StringToSetRoleConverter stringToSetRoleConverter()
+	{
+		return new StringToSetRoleConverter();
+	}
+	
     @Bean
     public ModelMapper modelMapper() {
        ModelMapper modelMapper = new ModelMapper();
@@ -41,6 +46,7 @@ public class ModelMapperConfig {
        			.addMapping(src-> src.getUser().getFullName(), OrderDTO::setRecipientName)
        			.addMapping(src-> src.getAddress().getAddress(), OrderDTO::setAddress);
        
+     
       
        // map dto to entity
        modelMapper.createTypeMap(CartLineItemDTO.class, CartLineItem.class)
@@ -51,6 +57,8 @@ public class ModelMapperConfig {
 			.addMapping(OrderDTO::getRecipientName, (dest, value) -> dest.getUser().setFullName(value !=null ? value.toString(): null))
 			.addMapping(OrderDTO::getAddress, (dest, value) -> dest.getAddress().setAddress(value !=null ? value.toString(): null));
        
+       modelMapper.createTypeMap(UserDTO.class, User.class)
+       		.addMappings(m -> m.using(stringToSetRoleConverter()).map(UserDTO::getRoles, User::setRoles));
        return modelMapper;
     }
 }

@@ -36,7 +36,7 @@ public class CartServiceImpl implements CartService {
 	
 	@Transactional
 	@Override
-	public CartDTO addProductToCart(Long variantProductId, int quantity) {
+	public CartDTO addProductToCart(Long cartId, Long variantProductId, int quantity) {
 
 		VariantProduct variantProduct = variantProductRepository.findById(variantProductId)
 				.orElseThrow(() -> new RuntimeException("product not found"));
@@ -46,7 +46,7 @@ public class CartServiceImpl implements CartService {
 		cartLineItemDTO.setVariantProductId(variantProductId);
 
 		CartLineItem cartLineItem = modelMapper.map(cartLineItemDTO, CartLineItem.class);
-		Cart cart = new Cart();
+		Cart cart = cartRepository.findById(cartId).orElse(null);
 		cart.getCartLineItems().add(cartLineItem);
 
 		// tinh toan tong gia tri don hang

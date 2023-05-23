@@ -4,7 +4,7 @@ import com.r2s.demo.dto.CartDTO;
 
 public interface CartService {
 	
-	CartDTO addProductToCart(Long variantProductId, int quantity);
 	CartDTO clearCart(Long id);
+	CartDTO addProductToCart(Long cartId, Long variantProductId, int quantity);
 
 }
