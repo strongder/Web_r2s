@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class WebR2sApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(WebR2sApplication.class, args);
 	}
 

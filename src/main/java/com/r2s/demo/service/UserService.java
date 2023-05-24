@@ -1,5 +1,10 @@
 package com.r2s.demo.service;
 
-public interface UserService {
+import com.r2s.demo.dto.UserDTO;
+
+public interface UserService extends BaseService<UserDTO, Long> {
+
+	UserDTO getCurrentUser();
+
 
 }

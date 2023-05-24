@@ -35,6 +35,9 @@ public class VariantProduct {
 	@Column (name = "color")
 	private String color;
 	
+	@Column (name = "price")
+	private BigDecimal price;
+	
 	@Column (name = "size")
 	private String size;
 	
