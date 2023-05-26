@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,7 +19,9 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "cart")
@@ -32,10 +37,15 @@ public class Cart {
 	@Column(name = "total")
 	private BigDecimal total;
 	
-	@OneToOne
-	@JoinColumn(name = "user_id")
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", unique = true)
+	@JsonIgnore
 	private User user;
 	
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@OneToMany(mappedBy = "cart")
 	private Set<CartLineItem> cartLineItems;
 }

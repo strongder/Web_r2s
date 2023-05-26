@@ -1,6 +1,7 @@
 package com.r2s.demo.service.impl;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
@@ -10,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.r2s.demo.dto.CartDTO;
 import com.r2s.demo.dto.CartLineItemDTO;
+import com.r2s.demo.dto.VariantProductDTO;
 import com.r2s.demo.entity.Cart;
 import com.r2s.demo.entity.CartLineItem;
 import com.r2s.demo.entity.VariantProduct;
+import com.r2s.demo.exception.ProductNotFoundException;
 import com.r2s.demo.repository.CartLineItemRepository;
 import com.r2s.demo.repository.CartRepository;
 import com.r2s.demo.repository.VariantProductRepository;
@@ -36,17 +39,21 @@ public class CartServiceImpl implements CartService {
 	
 	@Transactional
 	@Override
-	public CartDTO addProductToCart(Long cartId, Long variantProductId, int quantity) {
+	public CartDTO addProductToCart(Long cartId, CartLineItemDTO cartLineItemDTO) {
 
-		VariantProduct variantProduct = variantProductRepository.findById(variantProductId)
-				.orElseThrow(() -> new RuntimeException("product not found"));
-
-		CartLineItemDTO cartLineItemDTO = new CartLineItemDTO();
-		cartLineItemDTO.setQuantity(quantity);
-		cartLineItemDTO.setVariantProductId(variantProductId);
+		VariantProduct variantProduct = variantProductRepository.findById(cartLineItemDTO.getVariantProductId()).orElseThrow(
+				()-> new ProductNotFoundException("product not found"));
+		
+		
+		Cart cart = cartRepository.findById(cartId).orElse(null);
 
 		CartLineItem cartLineItem = modelMapper.map(cartLineItemDTO, CartLineItem.class);
-		Cart cart = cartRepository.findById(cartId).orElse(null);
+		cartLineItem.setVariantProduct(variantProduct);
+		cartLineItem.setPrice(variantProduct.getPrice());
+		cartLineItem.setCart(cart);
+		cartLineItemRepository.save(cartLineItem);
+		
+		
 		cart.getCartLineItems().add(cartLineItem);
 
 		// tinh toan tong gia tri don hang
@@ -54,7 +61,7 @@ public class CartServiceImpl implements CartService {
 		
 		cart.setTotal(total);
 
-		cartRepository.save(cart);
+ 		cartRepository.save(cart);
 
 		return modelMapper.map(cart, CartDTO.class);
 
@@ -86,4 +93,5 @@ public class CartServiceImpl implements CartService {
 		return modelMapper.map(cart, CartDTO.class);
 	}
 
+	
 }

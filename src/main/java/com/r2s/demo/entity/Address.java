@@ -29,17 +29,16 @@ public class Address {
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column (name = "district")
-	private String district;
+	@Column (name = "street")
+	private String street;
 	
-	@Column (name = "address")
-	private String address ;
+	@Column (name = "city")
+	private String city ;
 	
-	@Column (name = "province")
-	private String province;
+	@Column (name = "state")
+	private String state;
 	
-	@Column (name = "village")
-	private String village;
+	private String zipCode;
 	
 	@Column( columnDefinition = "boolean default false")
 	private boolean isDelete;

@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.r2s.demo.dto.AddressDTO;
 import com.r2s.demo.entity.Address;
 import com.r2s.demo.entity.User;
+import com.r2s.demo.exception.AddressNotFoundException;
+import com.r2s.demo.exception.UserNotFoundException;
 import com.r2s.demo.repository.AddressRepository;
 import com.r2s.demo.repository.UserRepository;
 import com.r2s.demo.service.AddressService;
@@ -30,27 +32,27 @@ public class AddressServiceImpl implements AddressService {
 	private ModelMapper modelMapper;
 
 	@Transactional(readOnly = true)
-	@Override
-	public AddressDTO getById(Long key) {
-		Optional<Address> address = addressRepository.findById(key);
-		if (address.isPresent()) {
-			return modelMapper.map(address, AddressDTO.class);
-		}
-		throw new RuntimeException("address not found");
+    @Override
+    public AddressDTO getById(Long key) {
+        Optional<Address> address = addressRepository.findById(key);
+        if (address.isPresent()) {
+            return modelMapper.map(address.get(), AddressDTO.class);
+        }
+        throw new AddressNotFoundException("address not found");
+    }
 
-	}
+    @Transactional(readOnly = true)
+    @Override
+    public List<AddressDTO> getAddressByUser(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
 
-	@Transactional(readOnly = true)
-	@Override
-	public List<AddressDTO> getAddressByUser(Long userId) {
-		Optional<User> user = userRepository.findById(userId);
-
-		if (user.isPresent()) {
-			Set<Address> addresses = user.get().getAddresses();
-			return addresses.stream().map(address -> modelMapper.map(addresses, AddressDTO.class)).toList();
-		} else
-			throw new RuntimeException("user not found");
-	}
+        if (user.isPresent()) {
+            Set<Address> addresses = user.get().getAddresses();
+            return addresses.stream().map(address -> modelMapper.map(address, AddressDTO.class)).toList();
+        } else {
+            throw new UserNotFoundException("user not found");
+        }
+    }
 
 	@Transactional
 	@Override
@@ -61,18 +63,18 @@ public class AddressServiceImpl implements AddressService {
 			Address address = addressRepository.save(existedAddress.get());
 			return modelMapper.map(address, AddressDTO.class);
 		}
-		throw new RuntimeException("address not found");
+		throw new AddressNotFoundException("address not found");
 	}
 
 	@Override
 	public AddressDTO update(AddressDTO addressDTO) {
-		Optional<Address> existedAddress = addressRepository.findById(addressDTO.getId());
-		if (existedAddress.isPresent()) {
+		Address existedAddress = modelMapper.map(addressDTO, Address.class);
+		if (existedAddress!=null) {
 			Address address = modelMapper.map(addressDTO, Address.class);
 			addressRepository.save(address);
 			return modelMapper.map(address, AddressDTO.class);
 		}
-		throw new RuntimeException("address not found");
+		throw new AddressNotFoundException("address not found");
 	}
 
 	@Override

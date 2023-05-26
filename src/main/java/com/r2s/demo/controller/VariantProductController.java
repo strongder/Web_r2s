@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,13 +38,13 @@ public class VariantProductController {
 		List<VariantProductDTO> variantProductDTOs = variantProductService.getByProduct(productId);
 		return new ResponseEntity<>(variantProductDTOs, HttpStatus.OK);
 	}
-
+	@PreAuthorize("ADMIN")
 	@PostMapping()
 	public ResponseEntity<VariantProductDTO> create(@RequestBody VariantProductDTO variantProductDTO) {
 		VariantProductDTO result = variantProductService.create(variantProductDTO);
 		return new ResponseEntity<>(result, HttpStatus.CREATED);
 	}
-
+	@PreAuthorize("ADMIN")
 	@PutMapping("/{id}")
 	public ResponseEntity<VariantProductDTO> update(@PathVariable Long id,
 			@RequestBody VariantProductDTO variantProductDTO) {

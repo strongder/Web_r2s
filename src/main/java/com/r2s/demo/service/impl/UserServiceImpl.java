@@ -22,6 +22,7 @@ import com.r2s.demo.service.UserService;
 //import com.r2s.demo.util.BcryptUtils;
 
 import ch.qos.logback.core.model.Model;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -33,8 +34,8 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	private UserRepository userRepository;
 	
-//	@Autowired
-//	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -50,8 +51,10 @@ public class UserServiceImpl implements UserService{
 		}
 		else {
 			User user = modelMapper.map(userDTO, User.class);
-//			user.setPassword(BcryptUtils.);
-			user.setCart(new Cart());
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
+			Cart cart = new Cart();
+			cart.setUser(user);
+			user.setCart(cart);
 			userRepository.save(user);
 			return userDTO;
 		}
@@ -59,31 +62,26 @@ public class UserServiceImpl implements UserService{
 	@Transactional
 	@Override
 	public UserDTO update(UserDTO userDTO) {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-//		
-//		Optional<User> existedUser = userRepository.findByUsername(userPrincipal.getName());
-//		if(existedUser.isPresent())
-//		{
-//			User user = modelMapper.map(userDTO, User.class);
-//			userRepository.save(user);
-//			return modelMapper.map(user, UserDTO.class);
-//		}
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		Optional<User> existedUser = userRepository.findByUsername(authentication.getName());
+		if(existedUser.isPresent())
+		{
+			User user = modelMapper.map(userDTO, User.class);
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
+			userRepository.save(user);
+			return modelMapper.map(user, UserDTO.class);
+		}
 		throw new UserNotFoundException("user not found");
 	}
 	
 	@Transactional(readOnly = true)
 	@Override
 	public UserDTO getCurrentUser() {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-//		
-//		Optional<User> existedUser = userRepository.findByUsername(userPrincipal.getName());
-//		if(existedUser.isPresent())
-//		{
-//			return  modelMapper.map(existedUser, UserDTO.class);
-//		}		
-		throw new UserNotFoundException("user not found");
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = userRepository.findByUsername(authentication.getName()).orElse(null);
+		return modelMapper.map(user, UserDTO
+				.class);
 	}
 
 	@Override

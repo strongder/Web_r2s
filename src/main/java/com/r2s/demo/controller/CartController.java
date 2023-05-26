@@ -5,11 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.r2s.demo.dto.CartDTO;
+import com.r2s.demo.dto.CartLineItemDTO;
 import com.r2s.demo.entity.VariantProduct;
 import com.r2s.demo.service.CartService;
 
@@ -21,15 +23,14 @@ public class CartController {
 	private CartService cartService;
 	
 	
-	@PostMapping("/{cartId}/{variantProductId}")
+	@PostMapping("/{cartId}")
 	public ResponseEntity<CartDTO> addProductByCart(
 			@PathVariable Long cartId,
-			@PathVariable Long variantProductId,
-			@RequestParam int quantity
+			@RequestBody CartLineItemDTO cartLineItemDTO
 			)
 	{
 		
-		CartDTO cartDTO = cartService.addProductToCart(variantProductId, variantProductId, quantity);
+		CartDTO cartDTO = cartService.addProductToCart(cartId, cartLineItemDTO);
 		return new ResponseEntity<>(cartDTO, HttpStatus.CREATED);
 		
 	}

@@ -16,7 +16,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "role")
@@ -33,8 +35,9 @@ public class Role {
 	@Column (name = "role_name")
 	private String roleName;
 	
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
 	@ManyToMany(mappedBy = "roles")
-	@JsonIgnore
 	private Set<User> users;
 	
 	
