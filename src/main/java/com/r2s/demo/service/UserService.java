@@ -6,5 +6,7 @@ public interface UserService extends BaseService<UserDTO, Long> {
 
 	UserDTO getCurrentUser();
 
+	UserDTO signUp(UserDTO userDTO);
+
 
 }

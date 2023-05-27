@@ -36,42 +36,38 @@ public class CartServiceImpl implements CartService {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	
 	@Transactional
 	@Override
 	public CartDTO addProductToCart(Long cartId, CartLineItemDTO cartLineItemDTO) {
 
-		VariantProduct variantProduct = variantProductRepository.findById(cartLineItemDTO.getVariantProductId()).orElseThrow(
-				()-> new ProductNotFoundException("product not found"));
-		
+		VariantProduct variantProduct = variantProductRepository.findById(cartLineItemDTO.getVariantProductId())
+				.orElseThrow(() -> new ProductNotFoundException("product not found"));
+
 		Cart cart = cartRepository.findById(cartId).orElse(null);
 
-		
-		
 		CartLineItem cartLineItem = modelMapper.map(cartLineItemDTO, CartLineItem.class);
-		
-		CartLineItem cartLineItem2 = cartLineItemRepository.findByVariantProductId(cartLineItem.getVariantProduct().getId());
-		
-		if(cartLineItem2!=null&& cartLineItem2.isDelete()==false) {
-			cartLineItem2.setQuantity(cartLineItem2.getQuantity()+cartLineItem.getQuantity());
+
+		CartLineItem cartLineItem2 = cartLineItemRepository
+				.findByVariantProductId(cartLineItem.getVariantProduct().getId());
+
+		if (cartLineItem2 != null && cartLineItem2.isDelete() == false) {
+			cartLineItem2.setQuantity(cartLineItem2.getQuantity() + cartLineItem.getQuantity());
 			cartLineItemRepository.save(cartLineItem2);
 			cart.getCartLineItems().add(cartLineItem2);
-		}
-		else {		
+		} else {
 			cartLineItem.setVariantProduct(variantProduct);
 			cartLineItem.setPrice(variantProduct.getPrice());
 			cartLineItem.setCart(cart);
 			cartLineItemRepository.save(cartLineItem);
 			cart.getCartLineItems().add(cartLineItem);
 		}
-		
-		
+
 		// tinh toan tong gia tri don hang
 		BigDecimal total = calculateTotalPrice(cart.getCartLineItems());
-		
+
 		cart.setTotal(total);
 		cart.setNumberProduct(cartLineItemRepository.numberProduct(cartId));
- 		cartRepository.save(cart);
+		cartRepository.save(cart);
 
 		return modelMapper.map(cart, CartDTO.class);
 
@@ -81,13 +77,12 @@ public class CartServiceImpl implements CartService {
 		BigDecimal totalPrice = BigDecimal.ZERO;
 
 		for (CartLineItem cartItem : cartLineItems) {
-			if(cartItem.isDelete()==false)
-			{
+			if (cartItem.isDelete() == false) {
 				BigDecimal price = cartItem.getVariantProduct().getPrice();
-			int quantity = cartItem.getQuantity();
-			BigDecimal lineTotal = price.multiply(BigDecimal.valueOf(quantity));
+				int quantity = cartItem.getQuantity();
+				BigDecimal lineTotal = price.multiply(BigDecimal.valueOf(quantity));
 
-			totalPrice = totalPrice.add(lineTotal);
+				totalPrice = totalPrice.add(lineTotal);
 			}
 		}
 
@@ -96,15 +91,13 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public CartDTO clearCart(Long id) {
-		
+
 		Cart cart = cartRepository.findById(id).orElse(null);
 		Set<CartLineItem> list = cart.getCartLineItems();
-		for(CartLineItem cartItem : list)
-		{
+		for (CartLineItem cartItem : list) {
 			cartItem.setDelete(true);
 		}
 		return modelMapper.map(cart, CartDTO.class);
 	}
 
-	
 }

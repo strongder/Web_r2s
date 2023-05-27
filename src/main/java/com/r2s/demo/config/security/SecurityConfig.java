@@ -44,10 +44,10 @@ public class SecurityConfig {
                                                    UserDetailsService userDetailsService, JwtAuthFilter filter) throws Exception {
         return httpSecurity.csrf().disable()
                 .authorizeHttpRequests()
-                    .requestMatchers("/api/auth/**","/users/**").permitAll()
+                    .requestMatchers("/api/auth/**", "/users/register-user").permitAll()
                 .and()
                 .authorizeHttpRequests()
-                    .requestMatchers("/products/**", "/variant-products/**",
+                    .requestMatchers("/products/**","/users/**", "/variant-products/**",
                     		"/carts/**","/addresses/**","/orders/**","/categories/**").hasAnyRole("ADMIN", "USER")
                 .and()
                 .authorizeHttpRequests()

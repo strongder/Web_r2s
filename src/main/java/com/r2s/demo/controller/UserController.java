@@ -36,13 +36,21 @@ public class UserController {
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
-	
+	@PreAuthorize("ADMIN")
 	@PostMapping("/register")
 	public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO)
 	{
 		UserDTO result= userService.create(userDTO);
 		return new ResponseEntity<>(result, HttpStatus.CREATED);
 	}
+	
+	@PostMapping("/register-user")
+	public ResponseEntity<UserDTO> signUp(@RequestBody UserDTO userDTO)
+	{
+		UserDTO result= userService.signUp(userDTO);
+		return new ResponseEntity<>(result, HttpStatus.CREATED);
+	}
+	
 
 
 }
