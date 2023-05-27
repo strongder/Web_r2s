@@ -1,15 +1,19 @@
 package com.r2s.demo.service.impl;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.r2s.demo.dto.OrderResponse;
 import com.r2s.demo.dto.AddressDTO;
 import com.r2s.demo.dto.OrderRequest;
+import com.r2s.demo.dto.OrderResponse;
 import com.r2s.demo.entity.Address;
 import com.r2s.demo.entity.Cart;
+import com.r2s.demo.entity.CartLineItem;
 import com.r2s.demo.entity.Order;
 import com.r2s.demo.entity.User;
 import com.r2s.demo.repository.AddressRepository;
@@ -63,7 +67,14 @@ public class OrderServiceImpl implements OrderService {
 		orderResponse.setDeliveryTime(order.getDeliveryTime());
 		orderResponse.setTotal(order.getTotal());
 
-		orderResponse.setCartLineItems(order.getUser().getCart().getCartLineItems());
+		Set<CartLineItem> list = new HashSet<>();
+		for(CartLineItem c: order.getUser().getCart().getCartLineItems())
+		{
+			if (c.isDelete()==false) {
+				list.add(c);
+			}
+		}
+		orderResponse.setCartLineItems(list);
 		orderResponse.setStatus(order.getStatus());
 		cartService.clearCart(cartId);
 		return orderResponse;

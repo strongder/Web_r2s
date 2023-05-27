@@ -37,6 +37,8 @@ public class Cart {
 	@Column(name = "total")
 	private BigDecimal total;
 	
+	private int numberProduct;
+	
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	@OneToOne(fetch = FetchType.LAZY)

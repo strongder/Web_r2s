@@ -52,8 +52,5 @@ public class CartLineItem {
 	@ManyToOne
 	@JoinColumn(name = "product_variant_id")
 	private VariantProduct variantProduct;
-	
-	
-
 
 }
