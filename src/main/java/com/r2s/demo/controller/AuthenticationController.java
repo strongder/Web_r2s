@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.r2s.demo.dto.AuthRequest;
+import com.r2s.demo.dto.AuthResponse;
 import com.r2s.demo.util.JwtUtils;
 
 @RestController
-@RequestMapping("/authenticate")
+@RequestMapping("/api/auth")
 public class AuthenticationController {
 	
 	@Autowired
@@ -25,14 +26,16 @@ public class AuthenticationController {
 	
 	
 	// generate jwt
-	@PostMapping()
-	public ResponseEntity<String> generateToken(@RequestBody AuthRequest authRequest)
+	@PostMapping("/login")
+	public ResponseEntity<AuthResponse> generateToken(@RequestBody AuthRequest authRequest)
 	{
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 		
 			String token = JwtUtils.generateToken(authRequest.getUsername());
-			return new ResponseEntity<>(token, HttpStatus.OK);
+			AuthResponse authResponse = new AuthResponse(token, "Đăng nhập thành công");
+				
+			return new ResponseEntity<>(authResponse, HttpStatus.OK);
 		
 	
 	}

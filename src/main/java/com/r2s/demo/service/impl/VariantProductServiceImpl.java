@@ -13,6 +13,7 @@ import com.r2s.demo.dto.ProductDTO;
 import com.r2s.demo.dto.VariantProductDTO;
 import com.r2s.demo.entity.Product;
 import com.r2s.demo.entity.VariantProduct;
+import com.r2s.demo.exception.ProductNotFoundException;
 import com.r2s.demo.repository.ProductRepository;
 import com.r2s.demo.repository.VariantProductRepository;
 import com.r2s.demo.service.VariantProductService;
@@ -36,7 +37,7 @@ public class VariantProductServiceImpl implements VariantProductService {
 		if (variantProduct.isPresent()) {
 			return modelMapper.map(variantProduct,VariantProductDTO.class);
 		}
-		throw new RuntimeException("product not found");
+		throw new ProductNotFoundException("product not found");
 	}
 	@Transactional(readOnly = true)
 	@Override
@@ -47,7 +48,7 @@ public class VariantProductServiceImpl implements VariantProductService {
 			List<VariantProduct> variantProducts = variantProductRepository.findByProductId(productId);
 			return variantProducts.stream().map(variantProduct -> modelMapper.map(variantProduct, VariantProductDTO.class)).toList();
 		}
-		else throw new RuntimeException("product not found");
+		else throw new ProductNotFoundException("product not found");
 	}
 	@Transactional
 	@Override
@@ -55,7 +56,7 @@ public class VariantProductServiceImpl implements VariantProductService {
 		Optional<VariantProduct> existedVariantProduct = variantProductRepository.findById(variantProductDTO.getId());
 		if (existedVariantProduct.isPresent())
 		{
-			throw new RuntimeException("product is exist");
+			throw new ProductNotFoundException("product not found");
 		}
 		else {
 			VariantProduct variantProduct = modelMapper.map(variantProductDTO, VariantProduct.class);
@@ -74,7 +75,7 @@ public class VariantProductServiceImpl implements VariantProductService {
 			return modelMapper.map(variantProduct, VariantProductDTO.class);
 		}
 		else {
-			throw new RuntimeException("product is exist");
+			throw new ProductNotFoundException("product not found");
 		}
 	}
 

@@ -9,6 +9,7 @@ import lombok.Data;
 public class CartDTO {
 	private Long id;
 	private BigDecimal total;
-	private List<CartLineItemDTO> cartLineItemDTOS;
+	private int numberProduct;
+
 
 }

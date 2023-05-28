@@ -1,12 +1,12 @@
 package com.r2s.demo.service.impl;
 
-import java.nio.file.attribute.UserPrincipal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.SpringSessionContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +21,6 @@ import com.r2s.demo.repository.UserRepository;
 import com.r2s.demo.service.UserService;
 //import com.r2s.demo.util.BcryptUtils;
 
-import ch.qos.logback.core.model.Model;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -33,8 +32,8 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	private UserRepository userRepository;
 	
-//	@Autowired
-//	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -50,8 +49,10 @@ public class UserServiceImpl implements UserService{
 		}
 		else {
 			User user = modelMapper.map(userDTO, User.class);
-//			user.setPassword(BcryptUtils.);
-			user.setCart(new Cart());
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
+			Cart cart = new Cart();
+			cart.setUser(user);
+			user.setCart(cart);
 			userRepository.save(user);
 			return userDTO;
 		}
@@ -59,31 +60,26 @@ public class UserServiceImpl implements UserService{
 	@Transactional
 	@Override
 	public UserDTO update(UserDTO userDTO) {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-//		
-//		Optional<User> existedUser = userRepository.findByUsername(userPrincipal.getName());
-//		if(existedUser.isPresent())
-//		{
-//			User user = modelMapper.map(userDTO, User.class);
-//			userRepository.save(user);
-//			return modelMapper.map(user, UserDTO.class);
-//		}
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		Optional<User> existedUser = userRepository.findByUsername(authentication.getName());
+		if(existedUser.isPresent())
+		{
+			User user = modelMapper.map(userDTO, User.class);
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
+			userRepository.save(user);
+			return modelMapper.map(user, UserDTO.class);
+		}
 		throw new UserNotFoundException("user not found");
 	}
 	
 	@Transactional(readOnly = true)
 	@Override
 	public UserDTO getCurrentUser() {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-//		
-//		Optional<User> existedUser = userRepository.findByUsername(userPrincipal.getName());
-//		if(existedUser.isPresent())
-//		{
-//			return  modelMapper.map(existedUser, UserDTO.class);
-//		}		
-		throw new UserNotFoundException("user not found");
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = userRepository.findByUsername(authentication.getName()).orElse(null);
+		return modelMapper.map(user, UserDTO
+				.class);
 	}
 
 	@Override
@@ -96,6 +92,29 @@ public class UserServiceImpl implements UserService{
 	public UserDTO getById(Long key) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Transactional
+	@Override
+	public UserDTO signUp(UserDTO userDTO) {
+		Optional<User> existedUser = userRepository.findByUsername(userDTO.getUsername());
+		if(existedUser.isPresent())
+		{
+			throw new UserNotFoundException("user not found"); 
+		}
+		else {
+			Set<String> roles = new HashSet<>();
+			roles.add("USER");
+			userDTO.setRoles(roles);
+//			userDTO.getRoles().add("USER");
+			User user = modelMapper.map(userDTO, User.class);
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
+			Cart cart = new Cart();
+			cart.setUser(user);
+			user.setCart(cart);
+			userRepository.save(user);
+			return userDTO;
+		}
 	}
 
 

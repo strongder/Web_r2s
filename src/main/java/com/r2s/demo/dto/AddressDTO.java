@@ -1,14 +1,12 @@
 package com.r2s.demo.dto;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
 public class AddressDTO {
-	private Long id;
-	private String district;
-	private String address ;
-	private String province;
-	private String village;
-	private boolean isDelete;
-
+	private String street;
+	private String city;
+	private String state;
+	private String zipCode;
 }
