@@ -36,7 +36,7 @@ public class UserController {
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
-	@PreAuthorize("ADMIN")
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/register")
 	public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO)
 	{

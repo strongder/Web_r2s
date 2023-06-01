@@ -44,14 +44,14 @@ public class ProductController {
 		return new ResponseEntity<>(productDTOS, HttpStatus.OK);
 
 	}
-	@PreAuthorize("ADMIN")
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping()
 	public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO productDTO)
 	{
 		ProductDTO result = productService.create(productDTO);
 		return new ResponseEntity<>(result, HttpStatus.CREATED);
 	}
-	@PreAuthorize("ADMIN")
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<ProductDTO> update(
 			@PathVariable Long id,

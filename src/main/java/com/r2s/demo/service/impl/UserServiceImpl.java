@@ -106,7 +106,6 @@ public class UserServiceImpl implements UserService{
 			Set<String> roles = new HashSet<>();
 			roles.add("USER");
 			userDTO.setRoles(roles);
-//			userDTO.getRoles().add("USER");
 			User user = modelMapper.map(userDTO, User.class);
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			Cart cart = new Cart();
